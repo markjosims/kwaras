@@ -23,8 +23,8 @@ def init_config_parser(
         defaults: dict = dict(),
     ) -> None:
 
-    if not cfg:
-        cfg = CFG_FILE
+    if not cfg_file:
+        cfg_file = CFG_FILE
     cfg = _open_cfg_safe(cfg_file)
 
     lang = defaults.get("LANGUAGE", cfg_file.split('.')[0])
