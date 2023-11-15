@@ -2,13 +2,15 @@
 import json
 import os.path
 from argparse import ArgumentParser, _ArgumentGroup, Action
-from typing import Sequence, Union
+from typing import Optional, Union
 from gooey_tools import add_hybrid_arg
 
 CFG_FILE = "config.cfg"
 UPDIR = os.path.dirname(os.getcwd())
 
-def _open_cfg_safe(cfg_file):
+def _open_cfg_safe(cfg_file: Optional[str] = None):
+    if not cfg_file:
+        return {}
     try:
         with open(cfg_file) as f:
             return json.load(f)
