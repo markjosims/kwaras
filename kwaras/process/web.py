@@ -169,7 +169,7 @@ def main(cfg):
             eaf_wav_files[eaf_file] = wav_file
 
     # Get mapping between EAFs and speakers
-    spkr_dict = get_speakers(cfg['META'])
+    spkr_dict = get_speakers(cfg.get('META', ''))
 
     # Output for clip metadata
     clip_fh = csv.DictWriter(
@@ -356,8 +356,8 @@ def mk_table_rows(clippables, eaf_wav_files, spkr_dict, tiers, fields, fnames, c
 
 def copy_web_files(www_dir):
     shutil.copy('web/index_wrapper.html', os.path.join(www_dir, 'index_wrapper.html'))
-    shutil.copytree('web/css', os.path.join(www_dir, 'css'))
-    shutil.copytree('web/js', os.path.join(www_dir, 'js'))
+    shutil.copytree('web/css', os.path.join(www_dir, 'css'), dirs_exist_ok=True)
+    shutil.copytree('web/js', os.path.join(www_dir, 'js'), dirs_exist_ok=True)
 
 def find_wav_file(eaf_file):
     """Look through an EAF file to find the wav file it corresponds to."""
