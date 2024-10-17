@@ -15,6 +15,7 @@ if not GOOEY:
     # TODO: clean this up
     def add_arg_nogui(parser, *args, **kwargs):
         kwargs.pop('widget', None)
+        kwargs.pop('group', None)
         if kwargs.get('action', None) in ('store_true', 'store_false'):
             kwargs.pop('metavar', None)
         return parser.add_argument(*args, **kwargs)
