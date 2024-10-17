@@ -18,6 +18,8 @@ if not GOOEY:
         kwargs.pop('group', None)
         if kwargs.get('action', None) in ('store_true', 'store_false'):
             kwargs.pop('metavar', None)
+        if type(kwargs['type']) is str:
+            kwargs.pop('type')
         return parser.add_argument(*args, **kwargs)
     add_hybrid_arg = add_arg_nogui
 else:
