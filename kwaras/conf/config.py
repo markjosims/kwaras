@@ -4,9 +4,24 @@ import os.path
 from argparse import ArgumentParser, _ArgumentGroup, Action
 from typing import Sequence, Union, Optional
 from kwaras.app import add_hybrid_arg
+import importlib
 
 CFG_FILE = "config.cfg"
 UPDIR = os.path.dirname(os.getcwd())
+
+GOOEY = importlib.util.find_spec('gooey_tools') is not None
+
+if not GOOEY:
+    # hacky way of avoiding calling gooey_tools
+    # TODO: clean this up
+    def add_arg_nogui(parser, *args, **kwargs):
+        kwargs.pop('widget', None)
+        if kwargs.get('action', None) in ('store_true', 'store_false'):
+            kwargs.pop('metavar', None)
+        return parser.add_argument(*args, **kwargs)
+    add_hybrid_arg = add_arg_nogui
+else:
+    from gooey_tools import add_hybrid_arg
 
 def _open_cfg_safe(cfg_file: Optional[str] = None):
     if not cfg_file:
