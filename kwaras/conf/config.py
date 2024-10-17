@@ -2,13 +2,15 @@
 import json
 import os.path
 from argparse import ArgumentParser, _ArgumentGroup, Action
-from typing import Sequence, Union
+from typing import Sequence, Union, Optional
 from kwaras.app import add_hybrid_arg
 
 CFG_FILE = "config.cfg"
 UPDIR = os.path.dirname(os.getcwd())
 
-def _open_cfg_safe(cfg_file):
+def _open_cfg_safe(cfg_file: Optional[str] = None):
+    if not cfg_file:
+        return {}
     try:
         with open(cfg_file) as f:
             return json.load(f)
@@ -21,6 +23,8 @@ def init_config_parser(
         defaults: dict = dict(),
     ) -> None:
 
+    if not cfg_file:
+        cfg_file = CFG_FILE
     cfg = _open_cfg_safe(cfg_file)
 
     lang = defaults.get("LANGUAGE", cfg_file.split('.')[0])
