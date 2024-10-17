@@ -3,7 +3,6 @@ import json
 import os.path
 from argparse import ArgumentParser, _ArgumentGroup, Action
 from typing import Sequence, Union, Optional
-from kwaras.app import add_hybrid_arg
 import importlib
 
 CFG_FILE = "config.cfg"
