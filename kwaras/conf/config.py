@@ -3,7 +3,7 @@ import json
 import os.path
 from argparse import ArgumentParser, _ArgumentGroup, Action
 from typing import Sequence, Union
-from gooey_tools import add_hybrid_arg
+from kwaras.app import add_hybrid_arg
 
 CFG_FILE = "config.cfg"
 UPDIR = os.path.dirname(os.getcwd())
