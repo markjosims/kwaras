@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Optional, Sequence, Union
 from kwaras.conf.config import init_config_parser, init_eafl_parser, init_csv_parser, init_html_parser, add_language_arg, _open_cfg_safe
 
-import importlib
+import importlib.util
 # import tkinter as tk
 # import tkinter.messagebox
 # from tkinter.constants import *

@@ -3,7 +3,7 @@ import json
 import os.path
 from argparse import ArgumentParser, _ArgumentGroup, Action
 from typing import Sequence, Union, Optional
-import importlib
+import importlib.util
 
 CFG_FILE = "config.cfg"
 UPDIR = os.path.dirname(os.getcwd())
