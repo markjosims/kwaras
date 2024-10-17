@@ -40,17 +40,20 @@ New copy of wav clip to be copied to fileshare is created under the name:
     sleeping.wav
 
 Authors: Lucien Carroll, Russ Horton
-
+Edited by Mark Simmons 9/6/2023
 """
 
 import os
 import csv
 import json
+import shutil
 import logging
 import random
 import re
 import wave
 from xml.etree import ElementTree as etree
+
+from typing import List, Tuple, Union
 
 from kwaras.formats import xlsx
 
@@ -60,27 +63,28 @@ CITATION_COLUMNS = ['Speaker', 'Citation', 'Length']
 HIDDEN_COLUMNS = ['Start', 'Stop', 'WAV', 'EAF', 'File', 'Token']
 
 
-def config(lang=None):
-    if lang == "Gitonga":
-        cfg_file = "gitonga.cfg`"
-    elif lang == "Raramuri":
-        cfg_file = "raramuri.cfg"
-    elif lang == "Mixtec":
-        cfg_file = "mixtec.cfg"
-    elif lang == "Kumiai":
-        cfg_file = "kumiai.cfg"
-    else:  # Other
-        cfg_file = "config.cfg"
+def config(lang: str = 'config') -> dict:
+    """
+    Looks for config file corresponding to lang in parent directory
+    and returns as json object if found,
+    if not found defaults to config.cfg.
+    """
+    # TODO: add script for making config files
+    cfg_file = f"{lang.lower()}.cfg"
 
     up_dir = os.path.dirname(os.getcwd())
 
-    logger.info("Using %s in %s for configuration settings.", cfg_file, up_dir)
-    cfg = json.load(os.path.join(up_dir, cfg_file))
+    try:
+        cfg = json.load(os.path.join(up_dir, cfg_file))
+        logger.info("Using %s in %s for configuration settings.", cfg_file, up_dir)
+    except FileNotFoundError:
+        logger.info("Using config.cfg in %s for configuration settings.", up_dir)
+        cfg = json.load(os.path.join(up_dir, 'config.cfg'))
 
     return cfg
 
 
-def filter_fields(fields, export_fields):
+def filter_fields(fields: List[str], export_fields: List[str]) -> Tuple[List[str], List[str]]:
     fnames = set([f.partition("@")[0] for f in fields])
     if export_fields is not []:
         fields = [f for f in fields if f.partition("@")[0] in export_fields]
@@ -89,13 +93,14 @@ def filter_fields(fields, export_fields):
     return fnames, fields
 
 
-def export_elan(cfg, export_fields):
+def export_elan(cfg: dict, export_fields: List[str]) -> None:
     csvfile = csv.DictWriter(
         open(os.path.join(cfg["FILE_DIR"], "status.csv"), mode="w", encoding='utf-8', newline=''),
         fieldnames=["Filename", "Speaker"] + export_fields, 
     )
     csvfile.writeheader()
 
+    # TODO: create and import lang classes automatically
     if cfg['LANGUAGE'].lower() == "raramuri":
         from kwaras.langs import Raramuri as language
     elif cfg['LANGUAGE'].lower() == "mixtec":
@@ -141,7 +146,7 @@ def export_elan(cfg, export_fields):
 def main(cfg):
     """Perform the metadata extraction and file renaming."""
 
-    export_fields = [f.strip() for f in cfg["EXP_FIELDS"].split(',')]
+    export_fields = [f.strip() for f in cfg["EXP_FIELDS"]]
     logger.info("Exporting fields: %s".format(export_fields))
     export_elan(cfg, export_fields)
     logger.info("ELAN data exported.")
@@ -223,6 +228,7 @@ def main(cfg):
     table_fh.close()
 
     wrap_html(cfg, 'web/index_wrapper.html')
+    copy_web_files(cfg['WWW'])
 
     logger.info("Finished.")
 
@@ -348,6 +354,10 @@ def mk_table_rows(clippables, eaf_wav_files, spkr_dict, tiers, fields, fnames, c
         except UnicodeDecodeError as err:
             logger.warning("Skipping annotation because it can't be decoded (%s): %s", err.message, repr(row))
 
+def copy_web_files(www_dir):
+    shutil.copy('web/index_wrapper.html', os.path.join(www_dir, 'index_wrapper.html'))
+    shutil.copytree('web/css', os.path.join(www_dir, 'css'))
+    shutil.copytree('web/js', os.path.join(www_dir, 'js'))
 
 def find_wav_file(eaf_file):
     """Look through an EAF file to find the wav file it corresponds to."""
@@ -542,7 +552,7 @@ def clip_wav(wav_file, clip_file, start, stop):
     return True
 
 
-def human_time(milliseconds, padded=False):
+def human_time(milliseconds: int, padded: bool = False) -> str:
     """Take a timsetamp in milliseconds and convert it into the familiar
     minutes:seconds format.
 

@@ -1,1 +1,2 @@
-py2exe
+git+https://github.com/markjosims/gooey_tools
+openpyxl
