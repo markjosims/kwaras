@@ -1,0 +1,2 @@
+git+https://github.com/markjosims/gooey_tools
+openpyxl
