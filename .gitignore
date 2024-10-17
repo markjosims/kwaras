@@ -8,4 +8,7 @@ build/*
 env/*
 web/clips
 .python-version
+*.cfg.DS_Store
+launch.json
 *.cfg
+*.egg-info/
